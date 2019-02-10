@@ -100,6 +100,13 @@ class jdict(UserDict):
             self.data[key] = value
             self._invalidate()
 
+    def __add__(self, other):
+        return { **self.data, **other.data }
+
+    def __iadd__(self, other):
+        for key, value in other.data.items():
+            self.data[key] = value
+
     @property
     def list(self) -> List[KeyValuePair]:
         """a list of the items ((key, value)-pairs)"""
@@ -251,3 +258,35 @@ class jdict(UserDict):
     def pop_last_value(self) -> Value:
         """Pops the last (key, value)-pair and returns the key"""
         return self.pop_last()[1]
+
+    def mapping(self, key_func=lambda x: x, value_func=lambda x: x):
+        """Maps the keys by key_func and the values by value_func"""
+        return jdict({key_func(key): value_func(value) for key, value in self.data.items()})
+
+    def item_mapping(self, item_func=lambda key, value: (key, value)):
+        """Maps the key-value pairs by item_func"""
+        return jdict(dict(item_func(key, value) for key, value in self.data.items()))       
+
+    def key_mapping(self, key_func=lambda x: x):
+        """Maps the keys by key_func"""
+        return self.mapping(key_func=key_func)
+
+    def value_mapping(self, value_func=lambda x: x):
+        """Maps the values by value_func"""
+        return self.mapping(value_func=value_func)
+
+    def select(self, key_func=lambda x: True, value_func=lambda x: True):
+        """Filters out items where the key doesn't fulfill key_func or the value doesn't fulfill value_func"""
+        return jdict({key: value for key, value in self.data.items() if key_func(key) and value_func(value)})
+
+    def item_select(self, item_func: lambda k, v: True):
+        """Filters out items where the (key, value)-pair doesn't fulfill item_func"""
+        return jdict({key: value for key, value in self.data.items() if item_func(key, value)})
+
+    def key_select(self, key_func=lambda x: True):
+        """Filters out items where the key doesn't fulfill key_func"""
+        return self.select(key_func=key_func)
+
+    def value_select(self, value_func=lambda x: True):
+        """Filters out items where the value doesn't fulfill value_func"""
+        return self.select(value_func=value_func)
