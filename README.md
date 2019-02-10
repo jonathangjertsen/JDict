@@ -16,10 +16,14 @@ For now you have to get the source and install with `pip install -e .`
 
 In the code:
 
-```
-from jdict import JDict
+```Python
+from jdict import jdict
 
-x = JDict({'x': 3, 'a': 2})
+x = jdict(x=3, y=2)
+
+# or
+
+x = jdict({'x': 3, 'y': 2})
 ```
 
 For usage of the JDict instance, see the tests.
