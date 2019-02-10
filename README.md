@@ -14,19 +14,28 @@ For now you have to get the source and install with `pip install -e .`
 
 ## Usage
 
-In the code:
-
 ```Python
-from jdict import jdict
-
-x = jdict(x=3, y=2)
-
-# or
-
-x = jdict({'x': 3, 'y': 2})
+>>> from jdict import jdict
+>>> j = jdict(x=3, y=4, z=5)
+>>> j.x
+3
+>>> j.first
+('x', 3)
+>>> j.first_key
+'x'
+>>> j.value_list
+[3, 4, 5]
+>>> j.list
+[('x', 3), ('y', 4), ('z', 5)]
+>>> j.last
+('z', 5)
+>>> j.pop_last()
+('z', 5)
+>>> j
+{'x': 3, 'y': 4}
 ```
 
-For usage of the JDict instance, see the tests.
+and so on. For more about the usage, see the tests.
 
 ## Running tests
 
