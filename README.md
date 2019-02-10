@@ -1,12 +1,12 @@
-# JDict
+# jdict
 
 Dictionary extended with convenience methods that depend heavily on dictionaries being ordered by insertion order.
 
 ## Requirements
 
-JDict requires Python 3.6+. It will raise an Exception if imported with a lower version.
+jdict requires Python 3.6+. It will raise an Exception if imported with a lower version.
 
-JDict has no dependencies, except for the following methods which require pandas: `series`, `datarow`, and `datacol`.
+jdict has no dependencies, except for the following methods which require pandas: `series`, `datarow`, and `datacol`.
 
 ## Installation
 
