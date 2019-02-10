@@ -11,7 +11,7 @@ Key = Hashable
 Value = Any
 KeyValuePair = Tuple[Key, Value]
 
-class JDict(UserDict):
+class jdict(UserDict):
     """Dictionary extended with convenience methods that depend heavily on dictionaries being ordered by insertion order"""
     # Protect attributes used for housekeeping
     protected_keys = (
@@ -49,17 +49,23 @@ class JDict(UserDict):
     def _pop(self, key: Key):
         """Helper: pops the item at the key"""
         if len(self.data) == 0:
-            raise IndexError("pop from empty JDict")
+            raise IndexError("pop from empty jdict")
         value = self.data[key]
         del self.data[key]
         self._invalidate()
         return key, value
     
-    def __init__(self, data: Optional[dict]=None):
+    def __init__(self, data=None, **kwargs):
         """Sets attributes used for housekeeping"""
-        if data is None:
-            data = {}
-        self.data = data
+        if data is not None:
+            if isinstance(data, dict):
+                self.data = data
+            else:
+                kwargs['data'] = data
+                self.data = kwargs
+        else:
+            self.data = kwargs
+
         self._cleanse()
         self._invalidate()
     
@@ -77,7 +83,7 @@ class JDict(UserDict):
     
     def _key_is_protected(self, key: Key) -> bool:
         """whether the key is protected (should not override default __setattr__ for this key)"""
-        return key in JDict.protected_keys
+        return key in jdict.protected_keys
     
     def __getattr__(self, key: Key):
         """Makes jdict.x equivalent to jdict['x']"""
@@ -191,6 +197,7 @@ class JDict(UserDict):
     @property
     def series(self):
         """a pandas Series representation"""
+        import pandas as pd
         return pd.Series(index=self.key_list, data=self.value_list)
 
     @property

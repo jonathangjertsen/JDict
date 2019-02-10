@@ -1,219 +1,224 @@
 import pandas as pd
 import pytest
 
-from jdict import JDict
+from jdict import jdict
 
 @pytest.fixture
 def in_data():
 	return {'x': 3, 'y': 4, 'z': 5}
 
 @pytest.fixture
-def jdict(in_data):
-	return JDict(in_data)
+def nonempty(in_data):
+	return jdict(in_data)
 
 @pytest.fixture
-def empty_jdict():
-	return JDict()
+def empty():
+	return jdict()
 
-@pytest.fixture
-def empty_jdict_from_empty_jdict_dict():
-	return JDict({})
+def test_constructors(in_data):
+	empty = jdict()
+	empty_from_empty_dict = jdict({})
+	nonempty_from_dict = jdict(in_data)
+	nonempty_from_kwargs = jdict(x=3, y=4, z=5)
 
-def test_construct(in_data, empty_jdict, empty_jdict_from_empty_jdict_dict, jdict):
-	assert len(empty_jdict) == 0
-	assert len(empty_jdict_from_empty_jdict_dict) == 0
-	assert len(jdict) == 3
-	assert(empty_jdict.data == {})
-	assert(empty_jdict_from_empty_jdict_dict.data == {})
-	assert jdict.data == in_data
-	assert jdict.data is in_data
+	assert len(empty) == 0
+	assert len(empty_from_empty_dict) == 0
+	assert len(nonempty_from_dict) == 3
+	assert len(nonempty_from_kwargs) == 3
+	assert(empty.data == {})
+	assert(empty_from_empty_dict.data == {})
+	assert(nonempty_from_dict.data == in_data)
+	assert(nonempty_from_kwargs.data == in_data)
+	assert nonempty_from_dict.data == in_data
+	assert nonempty_from_kwargs.data == in_data
+	assert nonempty_from_dict.data is in_data
 
-def test_getattr(empty_jdict, jdict):
+def test_getattr(empty, nonempty):
 	with pytest.raises(AttributeError):
-		empty_jdict.x
+		empty.x
 
-	assert jdict.x == jdict['x']
-	jdict['x'] = 1000
-	assert jdict.x == 1000
+	assert nonempty.x == nonempty['x']
+	nonempty['x'] = 1000
+	assert nonempty.x == 1000
 
 	with pytest.raises(AttributeError):
-		jdict.w
+		nonempty.w
 
-def test_setattr(empty_jdict, jdict):
+def test_setattr(empty, nonempty):
 	with pytest.raises(AttributeError):
-		empty_jdict.x
+		empty.x
 
-	jdict.x = 1000
-	assert jdict.x == 1000
-	assert jdict['x'] == 1000
+	nonempty.x = 1000
+	assert nonempty.x == 1000
+	assert nonempty['x'] == 1000
 
-	jdict.w = 1000
-	assert jdict.w == 1000
-	assert jdict['w'] == 1000
+	nonempty.w = 1000
+	assert nonempty.w == 1000
+	assert nonempty['w'] == 1000
 
-def test_key_list(empty_jdict, jdict):
-	assert empty_jdict.key_list == []
-	assert jdict.key_list == ['x', 'y', 'z']
+def test_list(empty, nonempty):
+	assert empty.list == []
+	assert nonempty.list == [('x', 3), ('y', 4), ('z', 5)]
 
-def test_value_list(empty_jdict, jdict):
-	assert empty_jdict.value_list == []
-	assert jdict.value_list == [3, 4, 5]
+def test_key_list(empty, nonempty):
+	assert empty.key_list == []
+	assert nonempty.key_list == ['x', 'y', 'z']
 
-def test_list(empty_jdict, jdict):
-	assert empty_jdict.list == []
-	assert jdict.list == [('x', 3), ('y', 4), ('z', 5)]
+def test_value_list(empty, nonempty):
+	assert empty.value_list == []
+	assert nonempty.value_list == [3, 4, 5]
 
-def test_first(empty_jdict, jdict):
-	assert empty_jdict.first is None
-	assert jdict.first == ('x', 3)
+def test_first(empty, nonempty):
+	assert empty.first is None
+	assert nonempty.first == ('x', 3)
 
-def test_first_key(empty_jdict, jdict):
-	assert empty_jdict.first_key is None
-	assert jdict.first_key == 'x'
+def test_first_key(empty, nonempty):
+	assert empty.first_key is None
+	assert nonempty.first_key == 'x'
 
-def test_first_value(empty_jdict, jdict):
-	assert empty_jdict.first_value is None
-	assert jdict.first_value == 3
+def test_first_value(empty, nonempty):
+	assert empty.first_value is None
+	assert nonempty.first_value == 3
 
-def test_last(empty_jdict, jdict):
-	assert empty_jdict.last is None
-	assert jdict.last == ('z', 5)
+def test_last(empty, nonempty):
+	assert empty.last is None
+	assert nonempty.last == ('z', 5)
 
-def test_last_key(empty_jdict, jdict):
-	assert empty_jdict.last_key is None
-	assert jdict.last_key == 'z'
+def test_last_key(empty, nonempty):
+	assert empty.last_key is None
+	assert nonempty.last_key == 'z'
 
-def test_last_value(empty_jdict, jdict):
-	assert empty_jdict.last_value is None
-	assert jdict.last_value == 5
+def test_last_value(empty, nonempty):
+	assert empty.last_value is None
+	assert nonempty.last_value == 5
 
-def test_any(empty_jdict, jdict):
-	assert empty_jdict.any is None
-	assert jdict.any is not None
-	assert len(jdict.any) == 2
+def test_any(empty, nonempty):
+	assert empty.any is None
+	assert nonempty.any is not None
+	assert len(nonempty.any) == 2
 
-def test_any_key(empty_jdict, jdict):
-	assert empty_jdict.any_key is None
-	assert jdict.any_key is not None
-	assert type(jdict.any_key) is str
+def test_any_key(empty, nonempty):
+	assert empty.any_key is None
+	assert nonempty.any_key is not None
+	assert type(nonempty.any_key) is str
 
-def test_any_value(empty_jdict, jdict):
-	assert empty_jdict.any_value is None
-	assert jdict.any_value is not None
-	assert type(jdict.any_value) is int
+def test_any_value(empty, nonempty):
+	assert empty.any_value is None
+	assert nonempty.any_value is not None
+	assert type(nonempty.any_value) is int
 
-def test_range(empty_jdict, jdict):
-	assert type(empty_jdict.range) is range
-	assert type(jdict.range) is range
-	assert len(empty_jdict.range) == 0
-	assert len(jdict.range) == 3
-	assert list(empty_jdict.range) == []
-	assert list(jdict.range) == [0,1,2]
+def test_range(empty, nonempty):
+	assert type(empty.range) is range
+	assert type(nonempty.range) is range
+	assert len(empty.range) == 0
+	assert len(nonempty.range) == 3
+	assert list(empty.range) == []
+	assert list(nonempty.range) == [0,1,2]
 
-def test_enum_keys(empty_jdict, jdict):
-	assert type(empty_jdict.enum_keys) is enumerate
-	assert type(jdict.enum_keys) is enumerate
-	assert list(empty_jdict.enum_keys) == []
-	assert list(jdict.enum_keys) == [(0, 'x'), (1, 'y'), (2, 'z')]
+def test_enum_keys(empty, nonempty):
+	assert type(empty.enum_keys) is enumerate
+	assert type(nonempty.enum_keys) is enumerate
+	assert list(empty.enum_keys) == []
+	assert list(nonempty.enum_keys) == [(0, 'x'), (1, 'y'), (2, 'z')]
 
-def test_enum_values(empty_jdict, jdict):
-	assert type(empty_jdict.enum_values) is enumerate
-	assert type(jdict.enum_values) is enumerate
-	assert list(empty_jdict.enum_values) == []
-	assert list(jdict.enum_values) == [(0, 3), (1, 4), (2, 5)]
+def test_enum_values(empty, nonempty):
+	assert type(empty.enum_values) is enumerate
+	assert type(nonempty.enum_values) is enumerate
+	assert list(empty.enum_values) == []
+	assert list(nonempty.enum_values) == [(0, 3), (1, 4), (2, 5)]
 
-def test_enum(empty_jdict, jdict):
-	assert type(empty_jdict.enum) is zip
-	assert type(jdict.enum) is zip
-	assert list(empty_jdict.enum) == []
-	assert list(jdict.enum) == [(0, 'x', 3), (1, 'y', 4), (2, 'z', 5)]
+def test_enum(empty, nonempty):
+	assert type(empty.enum) is zip
+	assert type(nonempty.enum) is zip
+	assert list(empty.enum) == []
+	assert list(nonempty.enum) == [(0, 'x', 3), (1, 'y', 4), (2, 'z', 5)]
 
-def test_json(empty_jdict, jdict):
-	assert empty_jdict.json == '{}'
-	assert jdict.json == '{"x": 3, "y": 4, "z": 5}'
+def test_json(empty, nonempty):
+	assert empty.json == '{}'
+	assert nonempty.json == '{"x": 3, "y": 4, "z": 5}'
 
-def test_series(empty_jdict, jdict):
-	assert isinstance(empty_jdict.series, pd.Series)
-	assert isinstance(jdict.series, pd.Series)
-	assert len(empty_jdict.series) == 0
-	assert len(jdict.series) == 3
-	assert list(jdict.series.index) == ['x', 'y', 'z']
-	assert list(jdict.series) == [3, 4, 5]
+def test_series(empty, nonempty):
+	assert isinstance(empty.series, pd.Series)
+	assert isinstance(nonempty.series, pd.Series)
+	assert len(empty.series) == 0
+	assert len(nonempty.series) == 3
+	assert list(nonempty.series.index) == ['x', 'y', 'z']
+	assert list(nonempty.series) == [3, 4, 5]
 
-def test_datacol(empty_jdict, jdict):
-	assert isinstance(empty_jdict.datacol, pd.DataFrame)
-	assert isinstance(jdict.datacol, pd.DataFrame)
-	assert len(empty_jdict.datacol) == 0
-	assert len(jdict.datacol) == 3
-	assert list(jdict.datacol.index) == ['x', 'y', 'z']
-	assert list(jdict.datacol[0]) == [3, 4, 5]
+def test_datacol(empty, nonempty):
+	assert isinstance(empty.datacol, pd.DataFrame)
+	assert isinstance(nonempty.datacol, pd.DataFrame)
+	assert len(empty.datacol) == 0
+	assert len(nonempty.datacol) == 3
+	assert list(nonempty.datacol.index) == ['x', 'y', 'z']
+	assert list(nonempty.datacol[0]) == [3, 4, 5]
 
-def test_datarow(empty_jdict, jdict):
-	assert isinstance(empty_jdict.datarow, pd.DataFrame)
-	assert isinstance(jdict.datarow, pd.DataFrame)
-	assert len(empty_jdict.datarow) == 1
-	assert len(jdict.datarow) == 1
-	assert list(jdict.datarow.index) == [0]
-	assert list(jdict.datarow['x']) == [3]
-	assert list(jdict.datarow['y']) == [4]
-	assert list(jdict.datarow['z']) == [5]
+def test_datarow(empty, nonempty):
+	assert isinstance(empty.datarow, pd.DataFrame)
+	assert isinstance(nonempty.datarow, pd.DataFrame)
+	assert len(empty.datarow) == 1
+	assert len(nonempty.datarow) == 1
+	assert list(nonempty.datarow.index) == [0]
+	assert list(nonempty.datarow['x']) == [3]
+	assert list(nonempty.datarow['y']) == [4]
+	assert list(nonempty.datarow['z']) == [5]
 
-def test_at(empty_jdict, jdict):
-	assert jdict.at(0) == ('x', 3)
-	assert jdict.at(1) == ('y', 4)
-	assert jdict.at(2) == ('z', 5)
-
-	with pytest.raises(IndexError):
-		empty_jdict.at(0)
-	with pytest.raises(IndexError):
-		empty_jdict.at(1)
-	with pytest.raises(IndexError):
-		jdict.at(-1)
-	with pytest.raises(IndexError):
-		jdict.at(3)
-
-def test_key_at(empty_jdict, jdict):
-	assert jdict.key_at(0) == 'x'
-	assert jdict.key_at(1) == 'y'
-	assert jdict.key_at(2) == 'z'
+def test_at(empty, nonempty):
+	assert nonempty.at(0) == ('x', 3)
+	assert nonempty.at(1) == ('y', 4)
+	assert nonempty.at(2) == ('z', 5)
 
 	with pytest.raises(IndexError):
-		empty_jdict.key_at(0)
+		empty.at(0)
 	with pytest.raises(IndexError):
-		empty_jdict.key_at(1)
+		empty.at(1)
 	with pytest.raises(IndexError):
-		jdict.key_at(-1)
+		nonempty.at(-1)
 	with pytest.raises(IndexError):
-		jdict.key_at(3)
+		nonempty.at(3)
 
-
-def test_value_at(empty_jdict, jdict):
-	assert jdict.value_at(0) == 3
-	assert jdict.value_at(1) == 4
-	assert jdict.value_at(2) == 5
-
-	with pytest.raises(IndexError):
-		empty_jdict.value_at(0)
-	with pytest.raises(IndexError):
-		empty_jdict.value_at(1)
-	with pytest.raises(IndexError):
-		jdict.value_at(-1)
-	with pytest.raises(IndexError):
-		jdict.value_at(3)
-
-def test_pop_first(empty_jdict, jdict):
-	with pytest.raises(IndexError):
-		empty_jdict.pop_first()
-
-	v0 = jdict.pop_first()
-	len0 = len(jdict)
-	v1 = jdict.pop_first()
-	len1 = len(jdict)
-	v2 = jdict.pop_first()
-	len2 = len(jdict)
+def test_key_at(empty, nonempty):
+	assert nonempty.key_at(0) == 'x'
+	assert nonempty.key_at(1) == 'y'
+	assert nonempty.key_at(2) == 'z'
 
 	with pytest.raises(IndexError):
-		jdict.pop_first()
+		empty.key_at(0)
+	with pytest.raises(IndexError):
+		empty.key_at(1)
+	with pytest.raises(IndexError):
+		nonempty.key_at(-1)
+	with pytest.raises(IndexError):
+		nonempty.key_at(3)
+
+
+def test_value_at(empty, nonempty):
+	assert nonempty.value_at(0) == 3
+	assert nonempty.value_at(1) == 4
+	assert nonempty.value_at(2) == 5
+
+	with pytest.raises(IndexError):
+		empty.value_at(0)
+	with pytest.raises(IndexError):
+		empty.value_at(1)
+	with pytest.raises(IndexError):
+		nonempty.value_at(-1)
+	with pytest.raises(IndexError):
+		nonempty.value_at(3)
+
+def test_pop_first(empty, nonempty):
+	with pytest.raises(IndexError):
+		empty.pop_first()
+
+	v0 = nonempty.pop_first()
+	len0 = len(nonempty)
+	v1 = nonempty.pop_first()
+	len1 = len(nonempty)
+	v2 = nonempty.pop_first()
+	len2 = len(nonempty)
+
+	with pytest.raises(IndexError):
+		nonempty.pop_first()
 	
 	assert v0 == ('x', 3)
 	assert v1 == ('y', 4)
@@ -222,19 +227,19 @@ def test_pop_first(empty_jdict, jdict):
 	assert len1 == 1
 	assert len2 == 0
 
-def test_pop_last(empty_jdict, jdict):
+def test_pop_last(empty, nonempty):
 	with pytest.raises(IndexError):
-		empty_jdict.pop_last()
+		empty.pop_last()
 
-	v0 = jdict.pop_last()
-	len0 = len(jdict)
-	v1 = jdict.pop_last()
-	len1 = len(jdict)
-	v2 = jdict.pop_last()
-	len2 = len(jdict)
+	v0 = nonempty.pop_last()
+	len0 = len(nonempty)
+	v1 = nonempty.pop_last()
+	len1 = len(nonempty)
+	v2 = nonempty.pop_last()
+	len2 = len(nonempty)
 
 	with pytest.raises(IndexError):
-		jdict.pop_last()
+		nonempty.pop_last()
 	
 	assert v0 == ('z', 5)
 	assert v1 == ('y', 4)
@@ -243,19 +248,19 @@ def test_pop_last(empty_jdict, jdict):
 	assert len1 == 1
 	assert len2 == 0
 
-def test_pop_first_key(empty_jdict, jdict):
+def test_pop_first_key(empty, nonempty):
 	with pytest.raises(IndexError):
-		empty_jdict.pop_first_key()
+		empty.pop_first_key()
 
-	v0 = jdict.pop_first_key()
-	len0 = len(jdict)
-	v1 = jdict.pop_first_key()
-	len1 = len(jdict)
-	v2 = jdict.pop_first_key()
-	len2 = len(jdict)
+	v0 = nonempty.pop_first_key()
+	len0 = len(nonempty)
+	v1 = nonempty.pop_first_key()
+	len1 = len(nonempty)
+	v2 = nonempty.pop_first_key()
+	len2 = len(nonempty)
 
 	with pytest.raises(IndexError):
-		jdict.pop_first_key()
+		nonempty.pop_first_key()
 	
 	assert v0 == 'x'
 	assert v1 == 'y'
@@ -264,19 +269,19 @@ def test_pop_first_key(empty_jdict, jdict):
 	assert len1 == 1
 	assert len2 == 0
 
-def test_pop_first_value(empty_jdict, jdict):
+def test_pop_first_value(empty, nonempty):
 	with pytest.raises(IndexError):
-		empty_jdict.pop_first_value()
+		empty.pop_first_value()
 
-	v0 = jdict.pop_first_value()
-	len0 = len(jdict)
-	v1 = jdict.pop_first_value()
-	len1 = len(jdict)
-	v2 = jdict.pop_first_value()
-	len2 = len(jdict)
+	v0 = nonempty.pop_first_value()
+	len0 = len(nonempty)
+	v1 = nonempty.pop_first_value()
+	len1 = len(nonempty)
+	v2 = nonempty.pop_first_value()
+	len2 = len(nonempty)
 
 	with pytest.raises(IndexError):
-		jdict.pop_first_value()
+		nonempty.pop_first_value()
 	
 	assert v0 == 3
 	assert v1 == 4
@@ -285,19 +290,19 @@ def test_pop_first_value(empty_jdict, jdict):
 	assert len1 == 1
 	assert len2 == 0
 
-def test_pop_last_key(empty_jdict, jdict):
+def test_pop_last_key(empty, nonempty):
 	with pytest.raises(IndexError):
-		empty_jdict.pop_last_key()
+		empty.pop_last_key()
 
-	v0 = jdict.pop_last_key()
-	len0 = len(jdict)
-	v1 = jdict.pop_last_key()
-	len1 = len(jdict)
-	v2 = jdict.pop_last_key()
-	len2 = len(jdict)
+	v0 = nonempty.pop_last_key()
+	len0 = len(nonempty)
+	v1 = nonempty.pop_last_key()
+	len1 = len(nonempty)
+	v2 = nonempty.pop_last_key()
+	len2 = len(nonempty)
 
 	with pytest.raises(IndexError):
-		jdict.pop_last_key()
+		nonempty.pop_last_key()
 	
 	assert v0 == 'z'
 	assert v1 == 'y'
@@ -306,19 +311,19 @@ def test_pop_last_key(empty_jdict, jdict):
 	assert len1 == 1
 	assert len2 == 0
 
-def test_pop_last_value(empty_jdict, jdict):
+def test_pop_last_value(empty, nonempty):
 	with pytest.raises(IndexError):
-		empty_jdict.pop_last_value()
+		empty.pop_last_value()
 
-	v0 = jdict.pop_last_value()
-	len0 = len(jdict)
-	v1 = jdict.pop_last_value()
-	len1 = len(jdict)
-	v2 = jdict.pop_last_value()
-	len2 = len(jdict)
+	v0 = nonempty.pop_last_value()
+	len0 = len(nonempty)
+	v1 = nonempty.pop_last_value()
+	len1 = len(nonempty)
+	v2 = nonempty.pop_last_value()
+	len2 = len(nonempty)
 
 	with pytest.raises(IndexError):
-		jdict.pop_last_value()
+		nonempty.pop_last_value()
 	
 	assert v0 == 5
 	assert v1 == 4
