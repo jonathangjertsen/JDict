@@ -51,56 +51,56 @@ def test_setattr(empty_jdict, jdict):
 	assert jdict.w == 1000
 	assert jdict['w'] == 1000
 
-def test_keylist(empty_jdict, jdict):
-	assert empty_jdict.keylist == []
-	assert jdict.keylist == ['x', 'y', 'z']
+def test_key_list(empty_jdict, jdict):
+	assert empty_jdict.key_list == []
+	assert jdict.key_list == ['x', 'y', 'z']
 
-def test_valuelist(empty_jdict, jdict):
-	assert empty_jdict.valuelist == []
-	assert jdict.valuelist == [3, 4, 5]
+def test_value_list(empty_jdict, jdict):
+	assert empty_jdict.value_list == []
+	assert jdict.value_list == [3, 4, 5]
 
-def test_itemlist(empty_jdict, jdict):
-	assert empty_jdict.itemlist == []
-	assert jdict.itemlist == [('x', 3), ('y', 4), ('z', 5)]
+def test_list(empty_jdict, jdict):
+	assert empty_jdict.list == []
+	assert jdict.list == [('x', 3), ('y', 4), ('z', 5)]
 
-def test_firstitem(empty_jdict, jdict):
-	assert empty_jdict.firstitem is None
-	assert jdict.firstitem == ('x', 3)
+def test_first(empty_jdict, jdict):
+	assert empty_jdict.first is None
+	assert jdict.first == ('x', 3)
 
-def test_firstkey(empty_jdict, jdict):
-	assert empty_jdict.firstkey is None
-	assert jdict.firstkey == 'x'
+def test_first_key(empty_jdict, jdict):
+	assert empty_jdict.first_key is None
+	assert jdict.first_key == 'x'
 
-def test_firstvalue(empty_jdict, jdict):
-	assert empty_jdict.firstvalue is None
-	assert jdict.firstvalue == 3
+def test_first_value(empty_jdict, jdict):
+	assert empty_jdict.first_value is None
+	assert jdict.first_value == 3
 
-def test_lastitem(empty_jdict, jdict):
-	assert empty_jdict.lastitem is None
-	assert jdict.lastitem == ('z', 5)
+def test_last(empty_jdict, jdict):
+	assert empty_jdict.last is None
+	assert jdict.last == ('z', 5)
 
-def test_lastkey(empty_jdict, jdict):
-	assert empty_jdict.lastkey is None
-	assert jdict.lastkey == 'z'
+def test_last_key(empty_jdict, jdict):
+	assert empty_jdict.last_key is None
+	assert jdict.last_key == 'z'
 
-def test_lastvalue(empty_jdict, jdict):
-	assert empty_jdict.lastvalue is None
-	assert jdict.lastvalue == 5
+def test_last_value(empty_jdict, jdict):
+	assert empty_jdict.last_value is None
+	assert jdict.last_value == 5
 
-def test_anyitem(empty_jdict, jdict):
-	assert empty_jdict.anyitem is None
-	assert jdict.anyitem is not None
-	assert len(jdict.anyitem) == 2
+def test_any(empty_jdict, jdict):
+	assert empty_jdict.any is None
+	assert jdict.any is not None
+	assert len(jdict.any) == 2
 
-def test_anykey(empty_jdict, jdict):
-	assert empty_jdict.anykey is None
-	assert jdict.anykey is not None
-	assert type(jdict.anykey) is str
+def test_any_key(empty_jdict, jdict):
+	assert empty_jdict.any_key is None
+	assert jdict.any_key is not None
+	assert type(jdict.any_key) is str
 
-def test_anyvalue(empty_jdict, jdict):
-	assert empty_jdict.anyvalue is None
-	assert jdict.anyvalue is not None
-	assert type(jdict.anyvalue) is int
+def test_any_value(empty_jdict, jdict):
+	assert empty_jdict.any_value is None
+	assert jdict.any_value is not None
+	assert type(jdict.any_value) is int
 
 def test_range(empty_jdict, jdict):
 	assert type(empty_jdict.range) is range
@@ -110,23 +110,23 @@ def test_range(empty_jdict, jdict):
 	assert list(empty_jdict.range) == []
 	assert list(jdict.range) == [0,1,2]
 
-def test_enumkeys(empty_jdict, jdict):
-	assert type(empty_jdict.enumkeys) is enumerate
-	assert type(jdict.enumkeys) is enumerate
-	assert list(empty_jdict.enumkeys) == []
-	assert list(jdict.enumkeys) == [(0, 'x'), (1, 'y'), (2, 'z')]
+def test_enum_keys(empty_jdict, jdict):
+	assert type(empty_jdict.enum_keys) is enumerate
+	assert type(jdict.enum_keys) is enumerate
+	assert list(empty_jdict.enum_keys) == []
+	assert list(jdict.enum_keys) == [(0, 'x'), (1, 'y'), (2, 'z')]
 
-def test_enumvalues(empty_jdict, jdict):
-	assert type(empty_jdict.enumvalues) is enumerate
-	assert type(jdict.enumvalues) is enumerate
-	assert list(empty_jdict.enumvalues) == []
-	assert list(jdict.enumvalues) == [(0, 3), (1, 4), (2, 5)]
+def test_enum_values(empty_jdict, jdict):
+	assert type(empty_jdict.enum_values) is enumerate
+	assert type(jdict.enum_values) is enumerate
+	assert list(empty_jdict.enum_values) == []
+	assert list(jdict.enum_values) == [(0, 3), (1, 4), (2, 5)]
 
-def test_enumitems(empty_jdict, jdict):
-	assert type(empty_jdict.enumitems) is zip
-	assert type(jdict.enumitems) is zip
-	assert list(empty_jdict.enumitems) == []
-	assert list(jdict.enumitems) == [(0, 'x', 3), (1, 'y', 4), (2, 'z', 5)]
+def test_enum(empty_jdict, jdict):
+	assert type(empty_jdict.enum) is zip
+	assert type(jdict.enum) is zip
+	assert list(empty_jdict.enum) == []
+	assert list(jdict.enum) == [(0, 'x', 3), (1, 'y', 4), (2, 'z', 5)]
 
 def test_json(empty_jdict, jdict):
 	assert empty_jdict.json == '{}'
@@ -171,7 +171,6 @@ def test_at(empty_jdict, jdict):
 		jdict.at(-1)
 	with pytest.raises(IndexError):
 		jdict.at(3)
-
 
 def test_key_at(empty_jdict, jdict):
 	assert jdict.key_at(0) == 'x'

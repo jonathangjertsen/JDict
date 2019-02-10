@@ -1,10 +1,15 @@
 from collections import UserDict
 import json
 import sys
+from typing import Any, Dict, Hashable, List, Optional, Tuple
 
 # Prevent importing jdict from versions below 3.6
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     raise Exception("jdict will not behave correctly on Python versions below 3.6.")
+
+Key = Hashable
+Value = Any
+KeyValuePair = Tuple[Key, Value]
 
 class JDict(UserDict):
     """Dictionary extended with convenience methods that depend heavily on dictionaries being ordered by insertion order"""
@@ -34,14 +39,14 @@ class JDict(UserDict):
             return None
     
     @staticmethod
-    def _at(idx, enumiterator):
+    def _at(idx: int, enumiterator):
         """Helper: Returns the n'th element in the enumerated iterator"""
         for _idx, *item in enumiterator:
             if idx == _idx:
                 return tuple(item)
         raise IndexError(idx)
     
-    def _pop(self, key):
+    def _pop(self, key: Key):
         """Helper: pops the item at the key"""
         if len(self.data) == 0:
             raise IndexError("pop from empty JDict")
@@ -50,7 +55,7 @@ class JDict(UserDict):
         self._invalidate()
         return key, value
     
-    def __init__(self, data=None):
+    def __init__(self, data: Optional[dict]=None):
         """Sets attributes used for housekeeping"""
         if data is None:
             data = {}
@@ -65,23 +70,23 @@ class JDict(UserDict):
         self._items = []
     
     def _invalidate(self):
-        """Sets all flags to invalid (so the keylist, valuelist and itemlist must be recalculated)"""
+        """Sets all flags to invalid (so the key_list, value_list and itemlist must be recalculated)"""
         self._keysvalid = False
         self._valuesvalid = False
         self._itemsvalid = False
     
-    def _key_is_protected(self, key):
-        """Returns whether the key is protected (should not override default __setattr__ for this key)"""
+    def _key_is_protected(self, key: Key) -> bool:
+        """whether the key is protected (should not override default __setattr__ for this key)"""
         return key in JDict.protected_keys
     
-    def __getattr__(self, key):
+    def __getattr__(self, key: Key):
         """Makes jdict.x equivalent to jdict['x']"""
         try:
             return self.data[key]
         except KeyError as ke:
             raise AttributeError(key) from ke
     
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: Key, value: Value):
         """Makes jdict.x = y equivalent to jdict['x'] = y"""
         if self._key_is_protected(key):
             return object.__setattr__(self, key, value)
@@ -90,149 +95,152 @@ class JDict(UserDict):
             self._invalidate()
 
     @property
-    def keylist(self):
-        """Returns a list of the keys"""
+    def list(self) -> List[KeyValuePair]:
+        """a list of the items ((key, value)-pairs)"""
+        if not self._itemsvalid:
+            self._items = list(self.data.items())
+            self._itemsvalid = True
+        return self._items
+
+    @property
+    def key_list(self) -> List[Key]:
+        """a list of the keys"""
         if not self._keysvalid:
             self._keys = list(self.data)
             self._keysvalid = True
         return self._keys
     
     @property
-    def valuelist(self):
-        """Returns a list of the values"""
+    def value_list(self) -> List[Value]:
+        """a list of the values"""
         if not self._valuesvalid:
             self._values = list(self.data.values())
             self._valuesvalid = True
-        return self._values
+        return self._values    
     
     @property
-    def itemlist(self):
-        """Returns a list of the items ((key, value)-pairs)"""
-        if not self._itemsvalid:
-            self._items = list(self.data.items())
-            self._itemsvalid = True
-        return self._items
-    
-    @property
-    def firstitem(self):
-        """Returns the first item ((key, value)-pair)"""
+    def first(self) -> KeyValuePair:
+        """the first item ((key, value)-pair)"""
         return self._first(self.data.items())
     
     @property
-    def firstkey(self):
-        """Returns the first key"""
+    def first_key(self) -> Key:
+        """the first key"""
         return self._first(self.data.keys())
     
     @property
-    def firstvalue(self):
-        """Returns the first value"""
+    def first_value(self) -> Value:
+        """the first value"""
         return self._first(self.data.values())
     
     @property
-    def lastitem(self):
-        """Returns the last item ((key, value)-pair)"""
-        return self._last(self.itemlist)
+    def last(self) -> KeyValuePair:
+        """the last item ((key, value)-pair)"""
+        return self._last(self.list)
     
     @property
-    def lastkey(self):
-        """Returns the last key"""
-        return self._last(self.keylist)
+    def last_key(self) -> Key:
+        """the last key"""
+        return self._last(self.key_list)
     
     @property
-    def lastvalue(self):
-        """Returns the last value"""
-        return self._last(self.valuelist)
+    def last_value(self) -> Value:
+        """the last value"""
+        return self._last(self.value_list)
     
     @property
-    def anyitem(self):
-        """Returns an item ((key, value)-pair) with no guarantees about which one it is"""
-        return self.firstitem
+    def any(self) -> KeyValuePair:
+        """an item ((key, value)-pair) with no guarantees about which one it is"""
+        return self.first
     
     @property
-    def anykey(self):
-        """Returns any key with no guarantees about which one it is"""
-        return self.firstkey
+    def any_key(self) -> Key:
+        """any key with no guarantees about which one it is"""
+        return self.first_key
     
     @property
-    def anyvalue(self):
-        """Returns any value with no guarantees about which one it is"""
-        return self.firstvalue
+    def any_value(self) -> Value:
+        """any value with no guarantees about which one it is"""
+        return self.first_value
     
     @property
     def range(self):
-        """Returns range(len(self))"""
+        """range(len(self))"""
         return range(len(self))
     
     @property
-    def enumkeys(self):
-        """Returns (idx, key)-pairs"""
+    def enum(self):
+        """(idx, key, value)-tuples"""
+        return zip(self.range, self.data.keys(), self.data.values())
+
+    @property
+    def enum_keys(self):
+        """(idx, key)-pairs"""
         return enumerate(self.data.keys())
     
     @property
-    def enumvalues(self):
-        """Returns (idx, value)-pairs"""
+    def enum_values(self):
+        """(idx, value)-pairs"""
         return enumerate(self.data.values())
     
     @property
-    def enumitems(self):
-        """Returns (idx, key, value)-tuples"""
-        return zip(self.range, self.data.keys(), self.data.values())
-    
-    @property
-    def json(self):
-        """Returns a JSON representation"""
+    def json(self) -> str:
+        """a JSON representation"""
         return json.dumps(self.data)
     
     @property
     def series(self):
-        """Returns a pandas Series representation"""
-        import pandas as pd
-        return pd.Series(index=self.keylist, data=self.valuelist)
-    
+        """a pandas Series representation"""
+        return pd.Series(index=self.key_list, data=self.value_list)
+
     @property
     def datacol(self):
-        """Returns a representation as a pandas DataFrame with one column"""
+        """a representation as a pandas DataFrame with one column"""
         import pandas as pd
         return pd.DataFrame(self.series)
-    
+        
     @property
     def datarow(self):
-        """Returns a representation as a pandas DataFrame with one row"""
+        """a representation as a pandas DataFrame with one row"""
         import pandas as pd
-        return pd.DataFrame(index=[0], data=self.data)
+        try:
+            return pd.DataFrame(index=[0], data=self.data)
+        except Exception as e:
+            print(e)
+            raise
     
-    def at(self, idx):
-        """Returns the item at the index"""
-        return self._at(idx, self.enumitems)
+    def at(self, idx: int) -> KeyValuePair:
+        """the item at the index"""
+        return self._at(idx, self.enum)
     
-    def key_at(self, idx):
-        """Returns the key at the index"""
+    def key_at(self, idx: int) -> Key:
+        """the key at the index"""
         return self.at(idx)[0]
     
-    def value_at(self, idx):
-        """Returns the value at the index"""
+    def value_at(self, idx: int) -> Value:
+        """the value at the index"""
         return self.at(idx)[1]
     
-    def pop_first(self):
+    def pop_first(self) -> KeyValuePair:
         """Pops the first (key, value)-pair and returns it"""
-        return self._pop(self.firstkey)
+        return self._pop(self.first_key)
     
-    def pop_last(self):
+    def pop_last(self) -> KeyValuePair:
         """Pops the last (key, value)-pair and returns it"""
-        return self._pop(self.lastkey)
+        return self._pop(self.last_key)
     
-    def pop_first_key(self):
+    def pop_first_key(self) -> Key:
         """Pops the first (key, value)-pair and returns the key"""
         return self.pop_first()[0]
     
-    def pop_first_value(self):
-        """Pops the first (key, value)-pair and returns the value"""
-        return self.pop_first()[1]
-    
-    def pop_last_key(self):
+    def pop_last_key(self) -> Key:
         """Pops the last (key, value)-pair and returns the key"""
         return self.pop_last()[0]
-    
-    def pop_last_value(self):
+
+    def pop_first_value(self) -> Value:
+        """Pops the first (key, value)-pair and returns the value"""
+        return self.pop_first()[1]
+        
+    def pop_last_value(self) -> Value:
         """Pops the last (key, value)-pair and returns the key"""
         return self.pop_last()[1]
