@@ -10,7 +10,7 @@ jdict has no dependencies, except for the following methods which require pandas
 
 ## Installation
 
-For now you have to get the source and install with `pip install -e .`
+`pip install jdict`
 
 ## Usage
 
