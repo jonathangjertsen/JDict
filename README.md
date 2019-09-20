@@ -1,4 +1,6 @@
 # jdict
+[![Build Status](https://travis-ci.com/jonathangjertsen/jdict.svg?branch=master)](https://travis-ci.com/jonathangjertsen/jdict)
+[![codecov](https://codecov.io/gh/jonathangjertsen/jdict/branch/master/graph/badge.svg)](https://codecov.io/gh/jonathangjertsen/jdict)
 
 Dictionary extended with convenience methods that depend heavily on dictionaries being ordered by insertion order.
 
