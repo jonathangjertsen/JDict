@@ -219,12 +219,7 @@ class jdict(UserDict):
     def datarow(self):
         """a representation as a pandas DataFrame with one row"""
         import pandas as pd
-
-        try:
-            return pd.DataFrame(index=[0], data=self.data)
-        except Exception as e:
-            print(e)
-            raise
+        return pd.DataFrame(index=[0], data=self.data)
 
     def at(self, idx: int) -> KeyValuePair:
         """the item at the index"""
