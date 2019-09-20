@@ -41,7 +41,5 @@ and so on. For more about the usage, see the tests.
 
 Run the following commands
 
-1. `pip install pytest` (if you don't have pytest)
-2. `pip install pandas` (if you don't have pandas)
-3. `pip install -e .` (if you haven't done so already)
-4. `pytest`
+1. `pip install -r requirements_dev.txt`
+1. `pytest --cov=jdict`
