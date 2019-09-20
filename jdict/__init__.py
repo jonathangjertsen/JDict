@@ -106,6 +106,7 @@ class jdict(UserDict):
     def __iadd__(self, other):
         for key, value in other.data.items():
             self.data[key] = value
+        return self
 
     @property
     def list(self) -> List[KeyValuePair]:
@@ -287,9 +288,7 @@ class jdict(UserDict):
 
     def item_select(self, item_func: lambda k, v: True):
         """Filters out items where the (key, value)-pair doesn't fulfill item_func"""
-        return jdict(
-            {key: value for key, value in self.data.items() if item_func(key, value)}
-        )
+        return jdict({key: value for key, value in self.data.items() if all(item_func(key, value))})
 
     def key_select(self, key_func=lambda x: True):
         """Filters out items where the key doesn't fulfill key_func"""
