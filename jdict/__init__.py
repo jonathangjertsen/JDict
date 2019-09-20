@@ -3,9 +3,7 @@ import json
 import sys
 from typing import Any, Dict, Hashable, List, Optional, Tuple
 
-# Prevent importing jdict from versions below 3.6
-if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-    raise Exception("jdict will not behave correctly on Python versions below 3.6.")
+f"""f-string triggers error when importing from Python versions earlier than 3.6"""
 
 Key = Hashable
 Value = Any
