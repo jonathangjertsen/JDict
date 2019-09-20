@@ -220,6 +220,7 @@ class jdict(UserDict):
     def datarow(self):
         """a representation as a pandas DataFrame with one row"""
         import pandas as pd
+
         return pd.DataFrame(index=[0], data=self.data)
 
     def at(self, idx: int) -> KeyValuePair:
@@ -288,7 +289,13 @@ class jdict(UserDict):
 
     def item_select(self, item_func: lambda k, v: True):
         """Filters out items where the (key, value)-pair doesn't fulfill item_func"""
-        return jdict({key: value for key, value in self.data.items() if all(item_func(key, value))})
+        return jdict(
+            {
+                key: value
+                for key, value in self.data.items()
+                if all(item_func(key, value))
+            }
+        )
 
     def key_select(self, key_func=lambda x: True):
         """Filters out items where the key doesn't fulfill key_func"""

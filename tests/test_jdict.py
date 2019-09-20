@@ -39,10 +39,12 @@ def test_constructors(in_data):
 
 
 def test_special_case_data_kwarg(in_data):
-	assert jdict(**in_data, data="whoops!") == { **in_data, "data": "whoops!" }
+    assert jdict(**in_data, data="whoops!") == {**in_data, "data": "whoops!"}
+
 
 def test_special_case_data_positional(in_data):
-	assert jdict("whoops!") == { "data": "whoops!" }
+    assert jdict("whoops!") == {"data": "whoops!"}
+
 
 def test_getattr(empty, nonempty):
     with pytest.raises(AttributeError):
@@ -372,36 +374,54 @@ def test_pop_last_value(empty, nonempty):
     assert len1 == 1
     assert len2 == 0
 
+
 def test_add():
-	a = jdict(x=3, y=4, z=5)
-	b = jdict(a=3, b=4, c=5)
-	assert a + b == b + a == jdict(a=3, b=4, c=5, x=3, y=4, z=5)
+    a = jdict(x=3, y=4, z=5)
+    b = jdict(a=3, b=4, c=5)
+    assert a + b == b + a == jdict(a=3, b=4, c=5, x=3, y=4, z=5)
+
 
 def test_iadd():
-	a = jdict(x=3, y=4, z=5)
-	a += jdict(a=3, b=4, c=5)
-	assert a == jdict(a=3, b=4, c=5, x=3, y=4, z=5)
+    a = jdict(x=3, y=4, z=5)
+    a += jdict(a=3, b=4, c=5)
+    assert a == jdict(a=3, b=4, c=5, x=3, y=4, z=5)
+
 
 def test_mapping():
-	assert jdict(x=3, y=4, z=5).mapping(key_func=lambda k: k*2, value_func=lambda v: v * 3) == jdict(xx=9, yy=12, zz=15)
+    assert jdict(x=3, y=4, z=5).mapping(
+        key_func=lambda k: k * 2, value_func=lambda v: v * 3
+    ) == jdict(xx=9, yy=12, zz=15)
+
 
 def test_item_mapping():
-	assert jdict(x=3, y=4, z=5).item_mapping(lambda k, v: (k*2, v*3)) == jdict(xx=9, yy=12, zz=15)
+    assert jdict(x=3, y=4, z=5).item_mapping(lambda k, v: (k * 2, v * 3)) == jdict(
+        xx=9, yy=12, zz=15
+    )
+
 
 def test_key_mapping():
-	assert jdict(x=3, y=4, z=5).key_mapping(lambda k: k * 2) == jdict(xx=3, yy=4, zz=5)
+    assert jdict(x=3, y=4, z=5).key_mapping(lambda k: k * 2) == jdict(xx=3, yy=4, zz=5)
+
 
 def test_value_mapping():
-	assert jdict(x=3, y=4, z=5).value_mapping(lambda v: v * 3) == jdict(x=9, y=12, z=15)
+    assert jdict(x=3, y=4, z=5).value_mapping(lambda v: v * 3) == jdict(x=9, y=12, z=15)
+
 
 def test_select():
-	assert jdict(x=3, y=4, z=5).select(key_func=lambda k: k in ("x", "y"), value_func=lambda v: v != 4) == jdict(x=3)
+    assert jdict(x=3, y=4, z=5).select(
+        key_func=lambda k: k in ("x", "y"), value_func=lambda v: v != 4
+    ) == jdict(x=3)
+
 
 def test_item_select():
-	assert jdict(x=3, y=4, z=5).item_select(lambda k, v: (k in ("x", "y"), v != 4)) == jdict(x=3)
+    assert jdict(x=3, y=4, z=5).item_select(
+        lambda k, v: (k in ("x", "y"), v != 4)
+    ) == jdict(x=3)
+
 
 def test_key_select():
-	assert jdict(x=3, y=4, z=5).key_select(lambda k: k in ("x", "y")) == jdict(x=3, y=4)
+    assert jdict(x=3, y=4, z=5).key_select(lambda k: k in ("x", "y")) == jdict(x=3, y=4)
+
 
 def test_value_select():
-	assert jdict(x=3, y=4, z=5).value_select(lambda v: v != 4) == jdict(x=3, z=5)
+    assert jdict(x=3, y=4, z=5).value_select(lambda v: v != 4) == jdict(x=3, z=5)
